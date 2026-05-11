@@ -3,14 +3,21 @@ import torch
 import torch.nn as nn
 from torch.nn import functinal as F
 
-class Block(nn.)
+class Block(nn.Module):
+    def __init__(self, config):
+        super().__init__()
+        self.ln_1 = nn.LayerNorm(config.n_embd) # normalize input
+        self.attn = CausalSelfAttention(config)
+        self.ln_2 = nn.LayerNorm(config.n_embd)
+        self.mlp = MLP(config) # feedforward net
 
 
+    # prenorm transformer block
+    def forward(self,x):
+        x = x+self.attn(self.ln_1(x)) # residual connections
+        x = x+self.mlp(self.ln_2(x))
 
-
-
-
-
+        return x        
 
 
 @dataclass
