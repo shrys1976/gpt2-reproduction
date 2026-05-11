@@ -2,6 +2,7 @@ from dataclasses import dataclass
 import torch
 import torch.nn as nn
 from torch.nn import functinal as F
+import math
 
 class CausalSelfAttention(nn.Module):
 
@@ -12,7 +13,9 @@ class CausalSelfAttention(nn.Module):
         self.c_proj =nn.Linear(config.n_embd, config.n_embd)
         self.n_head = config.n_head
         self.n_embd = config.n_embd
-        self.register_buffer("bias", torch.tril(torch.ones(config.block_size, config.block_size)).view(1,1, config.block_size, config.block_size))
+        self.register_buffer("bias", torch.tril(torch.ones
+        (config.block_size, config.block_size)).
+        view(1,1, config.block_size, config.block_size))
 
 
 
@@ -20,6 +23,7 @@ class CausalSelfAttention(nn.Module):
         B,T,C = x.size()
         qkv =self.c_attn(x)
         q,k,v =qkv.split(self.n_embd, dim =2)
+        #split into multiple heads
         k  = k.view(B,T,self.n_head, C // self.n_head).transpose(1,2)
         q  = q.view(B,T,self.n_head, C // self.n_head).transpose(1,2)
         v  = v.view(B,T,self.n_head, C // self.n_head).transpose(1,2)
@@ -69,11 +73,11 @@ class Block(nn.Module):
 @dataclass
 #model hyperparameters
 class GPTConfig:
-    block_size: int  = 256
-    vocab_size:int = 65
-    n_layer:int =6
-    n_head:int =6
-    n_embd:int =384
+    block_size: int  = 1024
+    vocab_size:int = 50257
+    n_layer:int =12
+    n_head:int =12
+    n_embd:int =768
 
 class GPT(nn.Module):
      def __init__(self, config):
@@ -91,3 +95,6 @@ class GPT(nn.Module):
         ))
 
         self.lm_head = nn.Linear(config.n_embd, config.vocab_size, bias = False)
+
+
+        
