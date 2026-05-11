@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 import torch
 import torch.nn as nn
-from torch.nn import functinal as F
+from torch.nn import functional as F
 import math
 
 class CausalSelfAttention(nn.Module):
@@ -33,7 +33,7 @@ class CausalSelfAttention(nn.Module):
         att = F.softmax(att, dim=-1)
 
         y = att @ v
-        y=y.transpose(1,2).contigous().view(B,T,C)
+        y=y.transpose(1,2).contiguous().view(B,T,C)
         y=self.c_proj(y)
         return y
 class MLP(nn.Module):
@@ -140,3 +140,7 @@ class GPT(nn.Module):
                     sd[k].copy_(sd_hf[k])
 
         return model
+
+
+model = GPT.from_pretrained('gpt2')
+print(model)
