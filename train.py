@@ -157,8 +157,6 @@ class GPT(nn.Module):
 
 
 
-
-
 device = "cpu"
 if torch.cuda.is_available():
     device = "cuda"
@@ -170,21 +168,22 @@ num_return_sequences = 5
 max_length = 30
 model = GPT(GPTConfig())
 model.eval()
-model.to('cuda')
+model.to(device)
 
 import tiktoken
 
-enc = tiktoken.getencodig('gpt2')
-tokens =enc.encode("Hello, I'm a language model")
-tokens =torch.tensor(tokens, dtype = torch.long)
+enc = tiktoken.get_encoding('gpt2')
+tokens = enc.encode("Hello, I'm a language model")
+tokens = torch.tensor(tokens, dtype = torch.long)
 tokens = tokens.unsqueeze(0).repeat(num_return_sequences, 1)
-x = tokens.to('cuda')
+x = tokens.to(device)
 
 torch.manual_seed(42)
-torch.cuda.manual_seed(42)
+if torch.cuda.is_available():
+    torch.cuda.manual_seed(42)
 
 while x.size(1) < max_length:
-    with torch.nograd():
+    with torch.no_grad():
         logits = model(x)
         logits = logits[:,-1,:]
         probs = F.softmax(logits, dim=-1)
